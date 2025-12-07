@@ -33,16 +33,6 @@ body {
 
 
 
-.gridNav {
-
-  display: grid;
-  grid-template-rows: 100%;
-  min-height: 10vh;
-
-}
-
-
-
 .gridHead {
 
   display: grid;
