@@ -1,20 +1,21 @@
 // #region Imports
 
-import { hasKeyFun } from '../../utilities/hasKeyFun.tsx';
-import { ranNumFun } from '../../utilities/ranNumFun.tsx';
-import   snowman     from '../../assets/snowman.png';
-import   styles      from './ChristmasCard.module.css';
-import { useEffect } from 'react';
-
-import { gsap } from "gsap";
-import { useGSAP } from "@gsap/react";
-import { RoughEase, ExpoScaleEase, SlowMo } from "gsap/EasePack";
-    
+import { ExpoScaleEase }      from "gsap/EasePack";
+import { gsap }               from "gsap";
+import { hasKeyFun }          from '../../utilities/hasKeyFun.tsx';
+import { ranNumFun }          from '../../utilities/ranNumFun.tsx';
+import { RoughEase }          from "gsap/EasePack";
 import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
-import { SplitText } from "gsap/SplitText";
-import { TextPlugin } from "gsap/TextPlugin";
+import { SlowMo }             from "gsap/EasePack";
+import   snowman              from '../../assets/snowman.png';
+import { SplitText }          from "gsap/SplitText";
+import   styles               from './ChristmasCard.module.css';
+import { TextPlugin }         from "gsap/TextPlugin";
+import { useEffect }          from 'react';
+import { useGSAP }            from "@gsap/react";
+import { useLocation }        from 'react-router-dom';
 
-gsap.registerPlugin(useGSAP,ScrambleTextPlugin,SplitText,TextPlugin,RoughEase,ExpoScaleEase,SlowMo);
+gsap.registerPlugin( useGSAP, ScrambleTextPlugin, SplitText, TextPlugin, RoughEase, ExpoScaleEase, SlowMo );
 
 // #endregion Imports
 
@@ -74,6 +75,17 @@ function ChristmasCard () {
     let ideCouNum : number = 0;  // identifier counter number = used to give each snowflake a unique identifier by increasing this number according to the current posSnoArr array length, which increases by one for each new snowflake created
 
     //#endregion let variables
+
+
+
+    // #region URL Parameters
+
+    const { search } : { search : string }  = useLocation();                 // search                    = one of the properties returned from useLocation(), a string representing the query parameters in the URL
+
+    const queParIns  : URLSearchParams      = new URLSearchParams( search ); // query parameters instance = an instance of the URLSearchParams class using the previously defined search variable that will provide methods for interacting with the query parameters; this is a web standard API and not React specific
+    const namParStr  : string | null        = queParIns.get( 'name' );       // name parameter string     = the value of the 'name' query parameter (or null) which will be used to customize the Christmas Card component's h1 element, that is acquired using the get() method on the previously defined queryParams URLSearchParams object instance
+
+    // #endregion URL Parameters
 
     // #endregion Shared Variables
 
@@ -310,7 +322,7 @@ function ChristmasCard () {
      ** the settings object's snoCouNum by making calls to creSnoFun() for
      ** each snowflake. After which it will push the returned object from each
      ** creSnoFun() call containing the posSnoFun() into the shared posSnoArr
-     ** array. Lastly it will call aniSnoFun(), which will loop over said array
+     ** array. LasgsaTimInsy it will call aniSnoFun(), which will loop over said array
      ** and call each of those functions on a set interval thus creating the
      ** animation effect.
      ** 
@@ -429,9 +441,226 @@ function ChristmasCard () {
 
 
 
+    // #region useGSAP
+
+    /**
+     ** This is a drop in replacement for useEffect() or useLayoutEffect() that
+     ** automatically handles cleanup using gsap.context(). This hook solves a
+     ** few React-specific friction points, because cleanup is important in React
+     ** and gsap.context() makes it simple.
+     **/
+
+    // #region Function Body
+
+    useGSAP(() => {
+
+        // #region GSAP Animation Variables
+
+        const gsaTimIns : GSAPTimeline       = gsap.timeline();                                                          // gsap timeline instance           = GSAP timeline instance with methods that custom GSAP animations will be attached to and then executed in sequence
+        const squEleArr : HTMLElement[]      = Array.from( document.querySelectorAll( '.pixelatedTransitionSquares' ) ); // squares element array            = array of all elements with the class name 'pixelatedTransitionSquares', which are the square div elements that cover the screen and will be animated to create a pixelated transition effect
+
+        const hacHe1Ele : HTMLElement | null = document.getElementById( 'hacHe1Ele' );                                   // hacked header 1 element          = the h1 element with the 'hacHe1Ele' id that will have two text animations applied to it, the first being a scramble text animation and the second being a gltiched text animation
+        const hacSplIns : SplitText          = SplitText.create( '.hackedSplitText', { type : 'words, chars' } );        // hacked split text instance       = GSAP Split Text instance that splits elements with the class 'hackedSplitText' into words and characters which will then be animated individually in a staggered fashion
+        const snoSecEle : HTMLElement | null = document.getElementById( 'snoSecEle' );                                   // snowfall section element         = the section element with the 'snoSecEle' id that will be faded in after the hacked section animations are complete and whose text will have a split text fade in animation applied to it
+        const snoSplIns : SplitText          = SplitText.create( '.snowfallSplitText', { type : 'words, chars' } );      // snowfall split text instance     = GSAP Split Text instance that splits all text elements inside of the snowfall section element (this includes the snowfall header 1 text, the snowfall paragraph text and the snowfall span text) into words and characters which will then be animated individually in a staggered fashion
+        const shuSquFun : HTMLElement[]      = gsap.utils.shuffle( squEleArr );                                          // shuffled squares function        = GSAP generic function that will returned a shuffled array of the previously defined squEleArr array
+
+        // #endregion GSAP Animation Variables
+
+
+
+        // #region 1st GSAP Animation - 1st Pixelated Transition (Fade Out to Reveal Hacked Section)
+
+        // this will perform a shuffle animation of the square div elements in a staggered fashion to create a pixelated transition effect from the initial page load in order to reveal to the hacked message section
+        gsaTimIns.to( shuSquFun, {
+
+            opacity  : 0,       // target opacity that the animation will end at
+            duration : 0.00333, // duration of each individual square fade out in seconds
+            stagger  : {        // stagger object to define the staggered animation properties
+
+                each : 0.00333,     // time gap between each square fade out animation in seconds
+                from : 'random',    // stagger from a random point in the list
+                grid : 'auto',      // automatically determine grid if necessary
+                ease : 'power1.out' // built in GSAP ease out animation which are best for UI transitions as they are fast to start which helps the UI feel responsive, and then they ease out towards the end giving a natural feeling of friction; start fast and end slower, like a rolling ball slowly coming to a stop
+
+            }
+
+        });
+
+        // #endregion 1st GSAP Animation - 1st Pixelated Transition (Fade Out to Reveal Hacked Section)
+
+
+
+        gsaTimIns.add( () => {}, '+=1' ); // 1st GSAP timeline 'pause', between the first pixelated transition animation (to reveal the hacked section) and the hacked message scramble text animation
+
+
+
+        // #region 2nd GSAP Animation - Hacked Message Scramble Text
+
+        // this will animate and place (into the hacked header 1 element) one character of the target text as a random character at a time until the full target text is revealed
+        gsaTimIns.to( hacHe1Ele, {
+
+            duration     : 3,                          // total duration of the entire scramble text animation
+            scrambleText : `You've Just Been Hacked!!` // target text that the animation will end at
+
+        });
+
+        // #endregion 2nd GSAP Animation - Hacked Message Scramble Text
+
+
+
+        // #region 3rd GSAP Animation - 1st Hacked Message Glitch Effect
+
+        gsaTimIns.to( hacHe1Ele, { duration : 0.1,  skewX   : 70,  ease : 'Power4.easeInOut' } ); // this will distort the hacked section h1 element in the horizontal direction to the right using a GSAP built in ease in out animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, skewX   : 0,   ease : 'Power4.easeInOut' } ); // this will undistort the hacked section h1 element back to normal using a GSAP built in ease in out animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, opacity : 0                              } ); // this will quickly make the hacked section h1 element invisible, creating a flicker effect when used with the below opacity animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, opacity : 1                              } ); // this will quickly make the hacked section h1 element visible, creating a flicker effect when used with the above opacity animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, x       : -20                            } ); // this will move the hacked section h1 element 20 pixels in the horizontal direction to the left, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, x       : 0                              } ); // this will undo the previous move of the hacked section h1 element back to its original position, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.02, scaleY  : 1.1, ease : 'Power4.easeInOut' } ); // this will scale the hacked section h1 element in the vertical direction by 1.1 times its original size with a GSAP built in ease in out animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, scaleY  : 1,   ease : 'Power4.easeInOut' } ); // this will scale the hacked section h1 element back to its original vertical scale with a GSAP built in ease in out animation, in seconds
+
+        // #endregion 3rd GSAP Animation - 1st Hacked Message Glitch Effect
+
+
+
+        gsaTimIns.add( () => {}, '+=1' ); // 2nd GSAP timeline 'pause', between the first hacked message glitch effect animation and the just kidding split character text animation
+
+
+
+        // #region 4th GSAP Animation - Just Kidding Message Split Character Text Animation
+
+        // this will animate the characters of the just kidding paragraph element one character at a time in a staggered fashion, moving a small amount in the right to left direction while also fading in
+        gsaTimIns.from( hacSplIns.chars, {
+
+            duration  : 3,   // total duration of the entire animation in seconds
+            x         : 10,  // animate by 10px right to left
+            autoAlpha : 0,   // fade in from opacity : 0 and visibility : hidden
+            stagger   : 0.05 // time gap between each character animation in seconds
+
+        });
+
+        // #endregion 4th GSAP Animation - Just Kidding Message Split Character Text Animation
+
+
+
+        // #region 5th GSAP Animation - 2nd Hacked Message Glitch Effect
+
+        gsaTimIns.to( hacHe1Ele, { duration : 0.1,  skewX   : 70,  ease : 'Power4.easeInOut' } ); // this will distort the hacked section h1 element in the horizontal direction to the right using a GSAP built in ease in out animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, skewX   : 0,   ease : 'Power4.easeInOut' } ); // this will undistort the hacked section h1 element back to normal using a GSAP built in ease in out animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, opacity : 0                              } ); // this will quickly make the hacked section h1 element invisible, creating a flicker effect when used with the below opacity animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, opacity : 1                              } ); // this will quickly make the hacked section h1 element visible, creating a flicker effect when used with the above opacity animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, x       : -20                            } ); // this will move the hacked section h1 element 20 pixels in the horizontal direction to the left, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, x       : 0                              } ); // this will undo the previous move of the hacked section h1 element back to its original position, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.02, scaleY  : 1.1, ease : 'Power4.easeInOut' } ); // this will scale the hacked section h1 element in the vertical direction by 1.1 times its original size with a GSAP built in ease in out animation, in seconds
+        gsaTimIns.to( hacHe1Ele, { duration : 0.04, scaleY  : 1,   ease : 'Power4.easeInOut' } ); // this will scale the hacked section h1 element back to its original vertical scale with a GSAP built in ease in out animation, in seconds
+
+        // #endregion 5th GSAP Animation - 2nd Hacked Message Glitch Effect
+
+
+
+        gsaTimIns.add( () => {}, '+=1' ); // 3rd GSAP timeline 'pause', between the second hacked message glitch effect animation and the second pixelated transition animation (to cover the hacked section)
+
+
+
+        // #region 6th GSAP Animation - 2nd Pixelated Transition (Fade In to Cover Hacked Section)
+
+        // this will perform a shuffle animation of the square div elements in a staggered fashion to create a fade in pixelated transition effect to cover the hacked message section in order to then perform a pixelated fade out animation before revealing the snowfall section
+        gsaTimIns.to( shuSquFun, {
+
+            opacity  : 1,       // target opacity that the animation will end at
+            duration : 0.00333, // duration of each individual square fade out in seconds
+            stagger  : {        // stagger object to define the staggered animation properties
+
+                each : 0.00333,     // time gap between each square fade out animation in seconds
+                from : 'random',    // stagger from a random point in the list
+                grid : 'auto',      // automatically determine grid if necessary
+                ease : 'power1.out' // built in GSAP ease out animation which are best for UI transitions as they are fast to start which helps the UI feel responsive, and then they ease out towards the end giving a natural feeling of friction; start fast and end slower, like a rolling ball slowly coming to a stop
+
+            }
+
+        });
+
+        // #endregion 6th GSAP Animation - 2nd Pixelated Transition (Fade In to Cover Hacked Section)
+
+
+
+        gsaTimIns.add( () => {}, '+=1' ); // 4th GSAP timeline 'pause', between the second pixelated transition (to cover the hacked section) and the snowfall section fade in +  the third pixelated transition (to reveal the snowfall section)
+
+
+
+        // #region 7th GSAP Animation - Snowfall Section Fade In Animation
+
+        // this will fade in the snowfall section element after the previous pixelated transition (to snowfall section) is complete; this is section is set to opacity 0 on page load so that it does not obscure the hacked section element
+        gsaTimIns.to( snoSecEle, {
+
+            opacity  : 1,    // target opacity that the animation will end at
+            duration : 0.01, // total duration of the entire animation in seconds
+
+        });
+
+        // #endregion 7th GSAP Animation - Snowfall Section Fade In Animation
+
+
+
+        // #region 8th GSAP Animation - 3rd Pixelated Transition (Fade Out to Reveal Snowfall Section)
+
+        // this will perform a shuffle animation of the square div elements in a staggered fashion to create a fade out pixelated transition effect from the previous pixelated fade in animation in order to reveal the snowfall section
+       gsaTimIns.to( shuSquFun, {
+
+            opacity  : 0,       // target opacity that the animation will end at
+            duration : 0.00333, // duration of each individual square fade out in second
+            stagger  : {        // stagger object to define the staggered animation properties
+
+                each : 0.00333,     // time gap between each square fade out animation in seconds
+                from : 'random',    // stagger from a random point in the list
+                grid : 'auto',      // automatically determine grid if necessary
+                ease : 'power1.out' // built in GSAP ease out animation which are best for UI transitions as they are fast to start which helps the UI feel responsive, and then they ease out towards the end giving a natural feeling of friction; start fast and end slower, like a rolling ball slowly coming to a stop
+
+            }
+
+        });
+
+        // #endregion 8th GSAP Animation - 3rd Pixelated Transition (Fade Out to Reveal Snowfall Section)
+
+
+
+        gsaTimIns.add( () => {}, '+=1' ); // 5th GSAP timeline 'pause', between the third pixelated transition (to reveal snowfall section) and the snowfall section text elements split text character animation
+
+
+
+        // #region 9th GSAP Animation - Snowfall Text Split Character Text Animation
+
+        // this will animate the characters of the snowfall section element (this includes the snowfall header 1 element, the snowfall paragraph element and the snowfall span element) one character at a time in a staggered fashion, moving a small amount in the right to left direction while also fading in
+        gsaTimIns.from( snoSplIns.chars, {
+
+            duration  : 3,   // total duration of the entire animation in seconds
+            x         : 10,  // animate by 10px right to left
+            autoAlpha : 0,   // fade in from opacity : 0 and visibility : hidden
+            stagger   : 0.05 // time gap between each character animation in seconds
+
+        });
+
+        // #endregion 9th GSAP Animation - Snowfall Text Split Character Text Animation
+
+    }, [] ); // empty dependency array ensures this effect runs only once when the component mounts
+
+    // #endregion Function Body
+
+    // #endregion useGSAP
+
+
+
     // #region useEffect
 
     /**
+     ** The first part of this effect sets up the grid layout for the square
+     ** div elements, which are used to create the pixelated transition effect.
+     ** More specifically, it calculates the size of each square so that the
+     ** squares fully cover (and with no overflow) the entire section areas. This
+     ** includes both the hacked message section and the snowfall section, which
+     ** are stacked on top of each other.
+     **
      ** This will initiate the snowfall animation. It will first perform
      ** a check to make sure the provided settings object contains valid keys
      ** that match the shared aniOptObj's keys and then override the default
@@ -441,10 +670,12 @@ function ChristmasCard () {
      ** the settings object's snoCouNum by making calls to creSnoFun() for
      ** each snowflake. After which it will push the returned object from each
      ** creSnoFun() call containing the posSnoFun() into the shared posSnoArr
-     ** array. Lastly it will call aniSnoFun(), which will loop over said array
+     ** array. LasgsaTimInsy it will call aniSnoFun(), which will loop over said array
      ** and call each of those functions on a set interval thus creating the
-     ** animation effect. The empty dependency array ([]) ensures this effect
-     ** runs only once when the component mounts.
+     ** animation effect.
+     **
+     ** The empty dependency array ([]) ensures this effect runs only once when the
+     ** component mounts.
      ** 
      ** @param   = No params
      ** @returns = No return
@@ -462,6 +693,7 @@ function ChristmasCard () {
         snoCouNum : number; // snowflake count number = number of snowflakes
         speMaxNum : number; // speed maximum number   = snowflake maximum falling speed
         speMinNum : number; // speed minimum number   = snowflake minimum falling speed
+
     };
 
     // #endregion Type Declarations
@@ -472,21 +704,40 @@ function ChristmasCard () {
 
     useEffect( () => {
 
-        // #region GSAP Text Animation
+        // #region Square Div Elements Size Calculations
 
-        const split = SplitText.create( '.split', { type: 'words, chars' } ); // split elements with the class 'split' into words and characters
+        const squSecEle : HTMLElement | null = document.getElementById( 'squSecEle' );                                   // squares section element = the containing HTML Seciton element to which contains all of the square div elements used for the pixelated transition effect
+        const squDivArr : HTMLElement[]      = Array.from( document.querySelectorAll( '.pixelatedTransitionSquares' ) ); // squares div element array = an array of all square div elements inside of the above squares section element
+        const sdaLenNum : number             = squDivArr.length;                                                         // squares div array length number = the length of the above squares div element array, which will be used to calculate the size of each square div element so that they fully cover the squares section element with no gaps and no overflow
 
-        // animate the characters in a staggered fashion
-        gsap.from( split.chars, {
 
-            duration  : 3,   // animation duration in seconds
-            x         : 10,  // animate from 10px to the left
-            autoAlpha : 0,   // fade in from opacity : 0 and visibility : hidden
-            stagger   : 0.05 // 0.05 seconds between each character
 
-        });
+        // type narrowing check for squSecEle not being null && the squDivArr having elements inside of it
+        if ( squSecEle !== null && sdaLenNum !== 0 ) {
 
-        // #endregion GSAP Text Animation
+            const sseWidNum : number = squSecEle.clientWidth;                            // squares section element width number = the width of the above squares section element
+            const sseHeiNum : number = squSecEle.clientHeight;                           // squares section element height number = the height of the above squares section element
+            const totAreNum : number = sseWidNum * sseHeiNum;                            // total area number = the total area of the squares section element; simple geometry formula: area = width * height
+            const squSizNum : number = Math.floor( Math.sqrt( totAreNum / sdaLenNum ) ); // square size number = the size that should be applied to each square element in order to fully cover the squares section element with no gaps and no overflow; some algebraic manipulation is used: side^2 * number of squares = total area, or to simply nx^2 = a and solve for x which resolves to x^2 = a / n then x = the square root of a / n where x is the size of the squares, a is the total area of the containing element and n = the squDivArr array length number; this number is then floored to ensure it is a whole number value and the grid will then slightly upsize via a minmax so that it fully covers the containing element (if Math.ceil() were used it would cause an overflow because of the minimum size which is fixed, whereas the maximum size is flexible)
+            const sseColNum : number = Math.floor( sseWidNum / squSizNum );              // squares section element column number = the number of columns of square elements that can fit in the squares section element; a simple calculation of the containing element's width divided by the previously calculated square size which is floored to ensure it is a whole number value
+            const sseRowNum : number = Math.floor( sseHeiNum / squSizNum );              // squares section element row number = the number of rows of square elements that can fit in the squares section element; a simple calculation of the containing element's height divided by the previously calculated square size which is floored to ensure it is a whole number value
+
+
+
+            squSecEle.style.gridTemplateColumns = `repeat(${ sseColNum }, minmax(${ squSizNum }px, 1fr))`; // set the squares section element's CSS grid template columns property to create the calculated number of columns with each column having a minimum size of the previously calculated square size in pixels and a maximum size of 1 fraction unit so that it will slightly upsize to fully cover the containing element
+            squSecEle.style.gridTemplateRows    = `repeat(${ sseRowNum }, minmax(${ squSizNum }px, 1fr))`; // set the squares section element's CSS grid template rows property to create the calculated number of rows with each row having a minimum size of the previously calculated square size in pixels and a maximum size of 1 fraction unit so that it will slightly upsize to fully cover the containing element
+
+        }
+
+        else {
+
+            console.warn( `Error: Either the squares section element is null (${ squSecEle === null ? 'TRUE' : 'FALSE' }) or the squares div element array is empty (${ sdaLenNum === 0 ? 'TRUE' : 'FALSE' }).` ); // issue a console warning about the squares section element being null or the squares div element array being empty
+
+        };
+
+        // #endregion Square Div Elements Size Calculations
+
+
 
         // #region Snowflake Animation Section
 
@@ -503,7 +754,7 @@ function ChristmasCard () {
 
         };
 
-        const conSecEle : HTMLElement | null = document.getElementById( 'conSecEle' ); // containing section element = the containing HTML Seciton element to which all snowflake elements will be attached and whose dimensions will be used to update and contain each snowflake element's position
+        const conSecEle : HTMLElement | null = document.getElementById( 'snoSecEle' ); // containing section element = the containing HTML Seciton element to which all snowflake elements will be attached and whose dimensions will be used to update and contain each snowflake element's position
 
         // #endregion Function Variables
 
@@ -523,7 +774,7 @@ function ChristmasCard () {
 
             const conSecEle = document.createElement( 'section' ); // containing section element = conSecEle did not exist, so create a new containing HTML Section element
 
-            conSecEle.id = 'conSecEle'; // give the newly created containing section element an id of conSecEle (containing section element)
+            conSecEle.id = 'snoSecEle'; // give the newly created containing section element an id of snoSecEle (snowfall section element)
 
             document.body.appendChild( conSecEle ); // append the newly created containing section element to the DOM
 
@@ -537,7 +788,7 @@ function ChristmasCard () {
 
         // #endregion Snowflake Animation Section
 
-    }, []);
+    }, [] );
 
     // #endregion Function Body
 
@@ -549,19 +800,498 @@ function ChristmasCard () {
 
     return (
 
-        // #region Section Element
+        < section id='comSecEle' className={ styles.componentSection } >
 
-        < section id='conSecEle' className={ `${ styles.container } split` } >
+            { /* Start Squares Section Element (Pixelated Transition Effect) */}
 
-            < h1  id='conHe1Ele' className={ styles.header1 }>Merry Christmas, Mom!</ h1 >
+            < section id='squSecEle' className={ styles.squaresSection } >
 
-            < img id='conImgEle' className={ styles.snowmanImg } src={ snowman } />
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
+                < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
 
-            < p   id='conParEle' className={ styles.paragraph } >< span id='conSpaEle' className={ styles.span } >From,</ span > Mr. Awesome</ p >
+            </ section >
+
+            { /* End Squares Section Element (Pixelated Transition Effect) */}
+
+
+
+            { /* Start Hacked Section Element */}
+
+            < section id='hacSecEle' className={ styles.hackedSection } >
+
+                < h1  id='hacHe1Ele' className={ styles.hackedHeader1 }></ h1 >
+
+                < p   id='hacParEle' className={ ` ${ styles.hackedParagraph } hackedSplitText ` } >Just kidding! But it just goes to show you that you should never trust a QR code! Christmas present incoming...</ p >
+
+            </ section >
+
+            { /* End Hacked Section Element */}
+
+
+
+            { /* Start Snowfall Section Element */}
+
+            < section id='snoSecEle' className={ `${ styles.snowfallSection } snowfallSplitText` } >
+
+                < h1  id='snoHe1Ele' className={ styles.snowfallHeader1 }>Merry Christmas, { namParStr }!</ h1 >
+
+                < img id='snoImgEle' className={ styles.snowfallImage } src={ snowman } />
+
+                < p   id='snoParEle' className={ styles.snowfallParagraph } >< span id='snoSpaEle' className={ styles.snowfallSpan } >From,</ span > Mr. Awesome</ p >
+
+            </ section >
+
+            { /* End Snowfall Section Element */}
 
         </ section >
-
-        // #endregion Section Element
 
     );
 
