@@ -4,6 +4,8 @@ import viteLogo from '../assets/vite.svg';
 import { increment, decrement } from '../features/counterSlice.tsx';
 import { useSelector } from 'react-redux';
 import type { State } from '../store.tsx';
+import { useEffect } from 'react';
+import { loadData } from '../dataSlice.tsx';
 
 
 
@@ -18,7 +20,26 @@ interface AppProps {
 
 function Home ( props : AppProps ) : React.ReactElement {
 
-    const { dispatch } = props;
+    const { state, dispatch } = props;
+
+
+
+    useEffect( () => {
+
+        /* Simulate loading data
+        setTimeout(() => {
+        dispatch(loadData());
+        }, 3000); */
+
+        dispatch(loadData());
+
+    }, [dispatch]);
+
+  const { isLoading } = useSelector(( state : State ) => state.loadData);
+  const { hasError }  = useSelector(( state : State ) => state.loadData);
+
+  const bacEndDat = isLoading ? 'Fetching data from API...' : hasError ? 'Error fetching data' : state.loadData.data.message;
+
 
 
 
@@ -62,10 +83,20 @@ function Home ( props : AppProps ) : React.ReactElement {
                     count is {useSelector((state : { counter : number }) => state.counter)}
                 </button>
 
+
+
+                <p>{ bacEndDat === undefined ? "Data should go here" : bacEndDat }</p>
+
                 </div>
 
                 <p>
                     Edit <code>src/App.tsx</code> and save to test HMR
+                </p>
+
+
+
+                <p className="read-the-docs">
+                    Click on the Vite and React logos to learn more.
                 </p>
 
             </div> { /* End gridMain */ }

@@ -12,8 +12,6 @@ interface NavBarComProps {
 
   dispatch: Function;
 
-  bacEndDat: string | undefined;
-
   onLogoAlert: ( e : React.MouseEvent<HTMLAnchorElement> ) => void;
   onHomeAlert: ( e : React.MouseEvent<HTMLAnchorElement> ) => void;
   onAboutAlert: ( e : React.MouseEvent<HTMLAnchorElement> ) => void;
@@ -23,7 +21,7 @@ interface NavBarComProps {
 
 export function NavBarCom ( props : NavBarComProps ) : React.ReactElement {
 
-    const { name, bacEndDat, onLogoAlert, onHomeAlert, onAboutAlert, onContactAlert } = props;
+    const { name, onLogoAlert, onHomeAlert, onAboutAlert, onContactAlert } = props;
 
     return (
 
@@ -35,10 +33,6 @@ export function NavBarCom ( props : NavBarComProps ) : React.ReactElement {
                     <img src={ reactLogo } alt="React logo" />
                     <p className={ styles.NavBarCom_logoTxt }>{ name }</p>
                 </NavLink>
-
-
-
-                <p>{ bacEndDat === undefined ? "Data should go here" : bacEndDat }</p>
 
 
 

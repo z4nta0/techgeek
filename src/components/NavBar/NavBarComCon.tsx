@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
 import { NavBarCom } from './NavBarCom';
 import { aboutCount, contactCount } from './clickCountArrSlice.tsx';
 import { logoCount, homeCount } from './clickCountObjSlice.tsx';
 import type { State } from '../../store.tsx';
 import { store } from '../../store.tsx';
-import { loadData } from '../../dataSlice.tsx';
-import { useSelector } from 'react-redux';
 
 
 
@@ -175,24 +172,6 @@ export function NavBarComCon ( props : NavBarComConProps ) : React.ReactElement 
 
 
 
-  useEffect( () => {
-
-    /* Simulate loading data
-    setTimeout(() => {
-      dispatch(loadData());
-    }, 3000); */
-
-    dispatch(loadData());
-
-  }, [dispatch]);
-
-  const { isLoading } = useSelector(( state : State ) => state.loadData);
-  const { hasError }  = useSelector(( state : State ) => state.loadData);
-
-  const bacEndDat = isLoading ? 'Fetching data from API...' : hasError ? 'Error fetching data' : state.loadData.data.message;
-
-
-
   /* Leaving this for future reference
   const [ data, setData ] = useState< string >( 'Empty Data' );
 
@@ -235,7 +214,7 @@ export function NavBarComCon ( props : NavBarComConProps ) : React.ReactElement 
 
     <>
 
-      <NavBarCom name={ name } state={ state } dispatch={ dispatch } bacEndDat={ bacEndDat } onLogoAlert={ handleLogoClick } onHomeAlert={ handleHomeClick } onAboutAlert={ handleAboutClick } onContactAlert={ handleContactClick } />
+      <NavBarCom name={ name } state={ state } dispatch={ dispatch } onLogoAlert={ handleLogoClick } onHomeAlert={ handleHomeClick } onAboutAlert={ handleAboutClick } onContactAlert={ handleContactClick } />
 
     </>
 
