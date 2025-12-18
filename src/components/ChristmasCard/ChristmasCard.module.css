@@ -113,6 +113,16 @@
 
 }
 
+@media (orientation: landscape) {
+
+    .hackedParagraph {
+
+        font-size : clamp(2cqw, 3cqw, 4cqw); /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
+
+    }
+
+}
+
 /* #endregion Hacked Section */
 
 
