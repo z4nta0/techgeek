@@ -47,8 +47,8 @@ function App( props : AppProps ) : React.ReactElement {
 
       <div className="gridFoot">
 
-        <p className="read-the-docs">
-          Click on the Vite and React logos to learn more.
+        <p className="footer">
+          © z4nta0 2025
         </p>
 
       </div> { /* End gridFoot */ }
