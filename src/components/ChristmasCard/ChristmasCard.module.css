@@ -37,6 +37,8 @@
 
 .componentSection {
 
+    container-name        : componentSection;
+    container-type        : inline-size; /* NOPE !!!!!! text sizing based on the container dimensions, which helps with responsive design */
     display               : grid;
     grid-template-columns : 100%; /* this, in combination with grid-column : 1 on direct grid children, will make the sections stack on top of each other */
     grid-template-rows    : 100%; /* this, in combination with grid-row    : 1 on direct grid children, will make the sections stack on top of each other */
@@ -156,6 +158,16 @@
     opacity             : 0;           /* this needs to be set to 0 so that it does not cover the hacked section and will be animted to a value of 1 by the GSAP animation */
     position            : relative;    /* this is needed for positioning the .snowfallParagraph text */
     z-index             : 2;           /* this needs to be set to 2 so that it is not covered up by the hacked section; the pixelated squares section will be set to 3 in order to overlay this (and all other) sections */
+
+}
+
+@container componentSection ( max-width: 550px ) {
+
+    .snowfallSection {
+
+        background-position : 90% 90%;
+
+    }
 
 }
 
