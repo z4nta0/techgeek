@@ -3,29 +3,22 @@
 
 @font-face {
 
-    font-family : 'Rubik Glitch';
-    src         : url( '../../assets/fonts/RubikGlitch-Regular.ttf' );
+    font-family : 'Rubik Glitch';                                            /* this is used for the hacked section's h1 element */
+    src         : url( '../../assets/fonts/RubikGlitch-Regular.ttf' );       /* this font is locally hosted */
 
 }
 
 @font-face {
 
-    font-family : 'Nosifer';
-    src         : url( '../../assets/fonts/Nosifer-Regular.ttf' );
+    font-family : 'Gloria Hallelujah';                                       /* this is used for the snowfall section's span element */
+    src         : url( '../../assets/fonts/GloriaHallelujah-Regular.ttf' );  /* this font is locally hosted */
 
 }
 
 @font-face {
 
-    font-family : 'Gloria Hallelujah';
-    src         : url( '../../assets/fonts/GloriaHallelujah-Regular.ttf' );
-
-}
-
-@font-face {
-
-    font-family : 'Mountains of Christmas';
-    src         : url( '../../assets/fonts/MountainsofChristmas-Bold.ttf' );
+    font-family : 'Mountains of Christmas';                                  /* this is used for the snowfall section's h1 and paragraph elements */
+    src         : url( '../../assets/fonts/MountainsofChristmas-Bold.ttf' ); /* this font is locally hosted */
 
 }
 
@@ -37,17 +30,17 @@
 
 .componentSection {
 
-    container-name        : componentSection;
-    container-type        : inline-size; /* NOPE !!!!!! text sizing based on the container dimensions, which helps with responsive design */
-    display               : grid;
-    grid-template-columns : 100%; /* this, in combination with grid-column : 1 on direct grid children, will make the sections stack on top of each other */
-    grid-template-rows    : 100%; /* this, in combination with grid-row    : 1 on direct grid children, will make the sections stack on top of each other */
-    height                : 100vh;
-    left                  : 0;
-    position              : fixed;
-    top                   : 0;
-    width                 : 100vw;
-    z-index               : 3;
+    container-name        : componentSection; /* this allows the element to be referenced for creating a container query */
+    container-type        : inline-size;      /* this was only needed so that the container query referencing this element would work (which property value is used does not seem to matter); the other containers use this to allow children to size certain properties based on the container dimensions but this element does not need that functionality */
+    display               : grid;             /* this allows easier placement of child elements, with 1 column and 1 row where all of the child elements will stack on top of each other and shown via animations as needed */
+    grid-template-columns : 100%;             /* this, in combination with grid-column : 1 on direct grid children, will make the sections stack on top of each other */
+    grid-template-rows    : 100%;             /* this, in combination with grid-row    : 1 on direct grid children, will make the sections stack on top of each other */
+    height                : 100vh;            /* this component, due to its 'fun' nature and the resulting animations, works best in fullscreen and this makes sure the component section takes up the full viewport height; this will of course hide the navbar and footer but that does not matter for this particular component */
+    left                  : 0;                /* this component, due to its 'fun' nature and the resulting animations, works best in fullscreen and this makes sure the component section is aligned to the left edge of the viewport; this will of course hide the navbar and footer but that does not matter for this particular component */
+    position              : fixed;            /* this component, due to its 'fun' nature and the resulting animations, works best in fullscreen and this makes sure the component section is fixed in place, covering the entire viewport; this will of course hide the navbar and footer but that does not matter for this particular component */
+    top                   : 0;                /* this component, due to its 'fun' nature and the resulting animations, works best in fullscreen and this makes sure the component section is aligned to the top edge of the viewport; this will of course hide the navbar and footer but that does not matter for this particular component */
+    width                 : 100vw;            /* this component, due to its 'fun' nature and the resulting animations, works best in fullscreen and this makes sure the component section takes up the full viewport width; this will of course hide the navbar and footer but that does not matter for this particular component */
+    z-index               : 2;                /* this is needed so that this component section overlays the navbar and footer, which have a z-index of 1 */
 
 }
 
@@ -59,11 +52,11 @@
 
 .squaresSection {
 
-    display     : grid;
-    gap         : 0;
-    grid-column : 1; /* because only one column is defined on the parent, this will make the sections stack on top of each other */
-    grid-row    : 1; /* because only one row    is defined on the parent, this will make the sections stack on top of each other */
-    z-index     : 3; /* this is required in order to be on top of the snowfall section, which has a z-index : 2 in order to be on top of the hacked section */
+    display     : grid; /* this allows the pixelated transition squares to be arranged in a grid layout; the grid-column-template and grid-row-template properties wil be defined via javascript when the component loads, which allows those property values to be dynamically sized according to the viewport dimensions */
+    gap         : 0;    /* this removes any gaps between the grid items, which is needed for the pixelated transition effect to work properly */
+    grid-column : 1;    /* this will make the sections stack on top of each other, because only one column is defined on the parent */
+    grid-row    : 1;    /* this will make the sections stack on top of each other, because only one row is defined on the parent */
+    z-index     : 3;    /* this is required in order to be on top of the snowfall section, which has a z-index : 2 in order to be on top of the hacked section */
 
 }
 
@@ -81,60 +74,56 @@
 
 .hackedSection {
 
-    background-image    : url( '../../assets/pirate-background.jpg' );
-    background-position : center;
-    background-repeat   : no-repeat;
-    background-size     : cover;
-    color               : #FF0E0E;
-    container-name      : hackedSection;
-    container-type      : inline-size; /* text sizing based on the container dimensions, which helps with the .hackedHeader1 font-size not causing container resizing for certain viewport dimenions */
-    grid-column         : 1;           /* because only one column is defined on the parent, this will make the sections stack on top of each other */
-    grid-row            : 1;           /* because only one row    is defined on the parent, this will make the sections stack on top of each other */
-    position            : relative;    /* this is needed for positioning the .hackedParagraph text */
+    background-image    : url( '../../assets/pirate-background.jpg' ); /* this is a cartoony, pirate skull and crossbones image on a black background */
+    background-position : center;                                      /* this centers the background image within the section and is needed because of background-size : cover */
+    background-repeat   : no-repeat;                                   /* this prevents the background image from repeating in a tile like fashion and is needed because of background-size : cover */
+    background-size     : cover;                                       /* this makes sure the background image covers the entire section area */
+    color               : #FF0E0E;                                   /* this makes text a bright red color to fit the 'hacked' theme (danger, warning, etc...) */
+    container-name      : hackedSection;                               /* this allows the element to be referenced for creating a container query */
+    container-type      : inline-size;                                 /* this allows children elements to size certain properties based on this element's dimensions, which helps with the .hackedHeader1 font size not causing container resizing during its animation for certain viewport dimensions */
+    grid-column         : 1;                                           /* this will make the sections stack on top of each other, because only one column is defined on the parent */
+    grid-row            : 1;                                           /* this will make the sections stack on top of each other, because only one row is defined on the parent */
+    position            : relative;                                    /* this is needed for position : absolute to work on the .hackedParagraph element */
 
 }
 
 .hackedHeader1 {
 
-    font-family : 'Rubik Glitch', cursive;
-    font-size   : 8cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-    line-height : 8cqw;
-    margin      : 0;
-    padding     : 0.33rem;
-    text-align  : center;
-    text-shadow : #FFFFFF 1px 1px 3px;     /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
+    font-family : 'Rubik Glitch', cursive; /* this font pairs nicely with glitch effect animation on this same element (as well as with the hacked section in general), itself with outlines of the text appearing in a zigzag type of manner */
+    font-size   : 8cqw;                    /* this bases the text sizing on the container's (container-name : hackedSection) dimensions, which helps with this font size not causing container resizing during animation for certain viewport dimenions */
+    line-height : 8cqw;                    /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : hackedSection) dimensions */
+    margin      : 0;                       /* this removes default margin around the h1 element */
+    padding     : 0.333rem;                /* this adds a slight amount padding, based on the root font size, for the h1 element, mostly only needed at the top but on certain viewport sizes the sides can also brush up against the edges */
+    text-shadow : #FFFFFF 1px 1px 3px;   /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
 
 }
 
 .hackedParagraph {
 
-    bottom         : 0.33rem;
-    font-family    : 'Nosifer', cursive;
-    font-size      : 3cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-    left           : 0.33rem;
-    line-height    : 4cqw;
-    margin         : 0;
-    padding-bottom : 0.33rem;                /* makes sure there is a gap on the bottom side equal to the above top positioning value */
-    padding-right  : 0.33rem;                   /* makes sure there is a gap on the right side equal to the above left positioning value */
-    position       : absolute;
-    text-align     : center;
-    text-shadow    : #FFFFFF 1px 1px 3px;     /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
+    bottom      : 0;                       /* this aligns the element to the bottom of the .hackedSection */
+    font-family : 'Rubik Glitch', cursive; /* this font pairs nicely with the hacked theme of this section (and the glitch animation of the h1 element), itself with outlines of the text appearing in a zigzag type of manner */
+    font-size   : 3cqw;                    /* this bases the text sizing on the container's (container-name : hackedSection) dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
+    line-height : 4cqw;                    /* this makes the text more legible since, unlike the other text elements in this component, it will have multiple lines of text and will give some space between each line; the units are based on the container's (container-name : hackedSection) dimensions */
+    margin      : 0;                       /* this removes default margin around the paragraph element */
+    padding     : 0.333rem;                /* this adds a slight amount padding, based on the root font size, for the paragraph element, mostly only needed at the bottom but on certain viewport sizes the sides can also brush up against the edges */
+    position    : absolute;                /* this is needed so that the element can be aligned to the bottom of the .hackedSection */
+    text-shadow : #FFFFFF 1px 1px 3px;   /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
 
 }
 
-@container hackedSection ( max-width: 550px ) {
+@container hackedSection ( max-width: 550px ) { /* this container query adjusts font sizes for smaller viewport widths (think portrait orientation on mobile), since container font size scaling did not work so well for said viewports (the font was way too small) */
 
     .hackedHeader1 {
 
-        font-size   : 10cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-        line-height : 10cqw;
+        font-size   : 10cqw; /* this bases the text sizing on the container's (container-name : hackedSection)dimensions, which helps with this font size not causing container resizing during animation for certain viewport dimenions */
+        line-height : 10cqw; /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : hackedSection) dimensions */
 
     }
 
     .hackedParagraph {
 
-        font-size   : 6cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-        line-height : 7cqw;
+        font-size   : 6cqw; /* this bases the text sizing on the container's (container-name : hackedSection) dimensions */
+        line-height : 7cqw; /* this makes the text more legible since, unlike the other text elements in this component, it will have multiple lines of text and will give some space between each line; the units are based on the container's (container-name : hackedSection) dimensions */
 
     }
 
@@ -148,27 +137,26 @@
 
 .snowfallSection {
 
-    background-image    : url( '../../assets/snowy-background.jpg' );
-    background-position : center;
-    background-repeat   : no-repeat;
-    background-size     : cover;
-    color               : #FFFFFF;
-    container-name      : snowfallSection;
-    container-type      : inline-size; /* text sizing based on the container dimensions, which helps with the .hackedHeader1 font-size not causing container resizing for certain viewport dimenions */
-    font-size           : 3rem;
-    grid-column         : 1;           /* because only one column is defined on the parent, this will make the sections stack on top of each other */
-    grid-row            : 1;           /* because only one row    is defined on the parent, this will make the sections stack on top of each other */
-    opacity             : 0;           /* this needs to be set to 0 so that it does not cover the hacked section and will be animted to a value of 1 by the GSAP animation */
-    position            : relative;    /* this is needed for positioning the .snowfallParagraph text */
-    z-index             : 2;           /* this needs to be set to 2 so that it is not covered up by the hacked section; the pixelated squares section will be set to 3 in order to overlay this (and all other) sections */
+    background-image    : url( '../../assets/snowy-background.jpg' ); /* this is a cartoony, snowy scene with a small cabin and evergreen trees */
+    background-position : center;                                     /* this centers the background image within the section and is needed because of background-size : cover */
+    background-repeat   : no-repeat;                                  /* this prevents the background image from repeating in a tile like fashion and is needed because of background-size : cover */
+    background-size     : cover;                                      /* this makes sure the background image covers the entire section area */
+    color               : #FFFFFF;                                  /* this sets the text color to white for better contrast against the snowy background, and it pairs well with the snowy theme */
+    container-name      : snowfallSection;                            /* this allows the element to be referenced for creating a container query */
+    container-type      : inline-size;                                /* this allows children elements to size certain properties based on this element's dimensions */
+    grid-column         : 1;                                          /* this will make the sections stack on top of each other, because only one column is defined on the parent */
+    grid-row            : 1;                                          /* this will make the sections stack on top of each other, because only one row is defined on the parent */
+    opacity             : 0;                                          /* this needs to be set to 0 so that it does not cover the hacked section and will be animted to a value of 1 by the GSAP animation */
+    position            : relative;                                   /* this is needed for position : absolute to work on the .snowfallParagraph element */
+    z-index             : 2;                                          /* this needs to be set to 2 so that it is not covered up by the hacked section; the pixelated transition squares section will be set to 3 in order to overlay this (and all other) sections */
 
 }
 
-@container componentSection ( max-width: 550px ) {
+@container componentSection ( max-width: 550px ) { /* this container query adjusts the background image for smaller viewport widths (think portrait orientation on mobile), since said image's main draw is in the bottom right area */
 
     .snowfallSection {
 
-        background-position : 90% 90%;
+        background-position : 90% 90%; /* this shifts the background image towards the bottom right for better composition on smaller viewports, since that is where the main draw of the image is at (and the center of the image is basically dead space) */
 
     }
 
@@ -176,67 +164,67 @@
 
 .snowfallHeader1 {
 
-    font-family : 'Mountains of Christmas', cursive;
-    font-size   : 5cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-    line-height : 5cqw;
-    text-align  : center;
-    text-shadow : #000000 3px 3px 6px;       /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
+    font-family : 'Mountains of Christmas', cursive; /* this font pairs nicely with the Christmas theme, as it is a fun font reminiscent of a holiday cartoon (for some reason it made me think of the Grinch, though I'm not sure that is accurate =P) */
+    font-size   : 5cqw;                              /* this bases the text sizing on the container's (container-name : snowfallSection) dimensions */
+    line-height : 5cqw;                              /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : snowfallSection) dimensions */
+    text-shadow : #000000 3px 3px 6px;             /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
 
 }
 
 .snowfallImage {
 
-    bottom    : 3rem;
-    left      : 3rem;
-    position  : absolute;
-    transform : rotateZ( 5deg );
-    width     : 6rem;
+    bottom    : 0;               /* this aligns the element to the bottom of the .snowfallSection */
+    left      : 0;               /* this aligns the element to the left of the .snowfallSection */
+    padding   : 3cqw;            /* this adds padding, based on the container's (container-name : snowfallSection) dimensions, to ensure the image does not brush up against the edges */
+    position  : absolute;        /* this is needed so that the element can be positioned in the bottom left of the .snowfallSection */
+    transform : rotateZ( 7deg ); /* this rotates the image slightly to give it a more dynamic and festive appearance */
+    width     : 6rem;            /* this sets a width for the image, based on the root font size, to ensure it is appropriately sized within the section */
 
 }
 
 .snowfallParagraph {
 
-    bottom      : 0.33rem;
-    font-family : 'Gloria Hallelujah', cursive;
-    font-size   : 3cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-    line-height : 3cqw;
-    margin      : 0;
-    position    : absolute;
-    right       : 0.33rem;
-    text-shadow : #000000 3px 3px 6px;  /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
+    bottom      : 0;                            /* this aligns the element to the bottom of the .snowfallSectoin */
+    font-family : 'Gloria Hallelujah', cursive; /* this font is only for the 'name' text (the From text is styled via the .snowfallSpan class) and is a fun and casual handwritten style font, meant to mimic someone signing their name like they would for a physical letter or card */
+    font-size   : 3cqw;                         /* this bases the text sizing on the container's (container-name : snowfallSection) dimensions */
+    line-height : 3cqw;                         /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : snowfallSection) dimensions */
+    margin      : 0;                            /* this removes default margin around the paragraph element */
+    padding     : 0.333rem;                     /* this adds a slight amount padding, based on the root font size, for the paragraph element, mostly only needed for the bottom and right edges but I left it all around it just in case */
+    position    : absolute;                     /* this is needed so that the element can be positioned in the bottom right of the .snowfallSection */
+    right       : 0;                            /* this aligns the element to the right of the .snowfallSection */
+    text-shadow : #000000 3px 3px 6px;        /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
 
 }
 
 .snowfallSpan {
 
-    font-family : 'Mountains of Christmas', cursive;
-    font-size   : 3cqw;                  /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-    font-weight : bold;
-    line-height : 3cqw;
-    text-shadow : #000000 3px 3px 6px; /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
+    font-family : 'Mountains of Christmas', cursive; /* this font is only for the 'From' text (the 'name' text is styled via the .snowfallParagraph class) and pairs nicely with the Christmas theme, as it is a fun font reminiscent of a holiday cartoon (for some reason it made me think of the Grinch, though I'm not sure that is accurate =P) */
+    font-size   : 3cqw;                              /* this bases the text sizing on the container's (container-name : snowfallSection) dimensions */
+    line-height : 3cqw;                              /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : snowfallSection) dimensions */
+    text-shadow : #000000 3px 3px 6px;             /* this makes the text more legible in addition to giving it some depth and making it look like it overlays the background image, as opposed to being part of it */
 
 }
 
-@container snowfallSection ( max-width: 550px ) {
+@container snowfallSection ( max-width: 550px ) { /* this container query adjusts font sizes for smaller viewport widths (think portrait orientation on mobile), since container font size scaling did not work so well for said viewports (the font was way too small) */
 
     .snowfallHeader1 {
 
-        font-size   : 8cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-        line-height : 8cqw;
+        font-size   : 8cqw; /* this bases the text sizing on the container's (container-name : snowfallSection) dimensions */
+        line-height : 8cqw; /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : snowfallSection) dimensions */
 
     }
 
     .snowfallParagraph {
 
-        font-size   : 5cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-        line-height : 5cqw;
+        font-size   : 5cqw; /* this bases the text sizing on the container's (container-name : snowfallSection) dimensions */
+        line-height : 5cqw; /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : snowfallSection) dimensions */
 
     }
 
     .snowfallSpan {
 
-        font-size   : 5cqw; /* text sizing based on the container dimensions, which helps with this font-size not causing container resizing for certain viewport dimenions */
-        line-height : 5cqw;
+        font-size   : 5cqw; /* this bases the text sizing on the container's (container-name : snowfallSection) dimensions */
+        line-height : 5cqw; /* this needs to match the font-size to ensure proper vertical alignment and spacing; the units are based on the container's (container-name : snowfallSection) dimensions */
 
     }
 
