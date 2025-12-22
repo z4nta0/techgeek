@@ -53,10 +53,10 @@ function ChristmasCard () {
 
     const aniOptObj : AniOptObj = {
 
-        sizMaxNum : 2,
+        sizMaxNum : 8,
         sizMinNum : 1,
         snoColStr : '#FFFFFF',
-        snoCouNum : 35,
+        snoCouNum : 120,
         speMaxNum : 5,
         speMinNum : 1,
 
@@ -799,13 +799,16 @@ function ChristmasCard () {
 
         // #region Function Variables
 
+        const smaHeiBoo : boolean = winHeiNum < 550; // small height boolean = this will store a boolean value that indicates whether the window height number is less than 550 pixels, which is used to reduce the speed of the snowflakes falling for better asthetics (smaller height means the snowflakes fall too quickly since there is less vertical space)
+        const smaWidBoo : boolean = winWidNum < 550; // small width boolean  = this will store a boolean value that indicates whether the window width number is less than 550 pixels, which is used to reduce the number of snowflakes for better asthetics (smaller width means too many snowflakes can overcrowd the screen)
+
         const iniSetObj : IniSetObj = {
 
             sizMaxNum : 8,
             sizMinNum : 1,
             snoColStr : '#FFFFFF',
-            snoCouNum : 120,
-            speMaxNum : 5,
+            snoCouNum : smaWidBoo === true ? 60 : 120,
+            speMaxNum : smaHeiBoo === true ? 2 : 5,
             speMinNum : 1,
 
         };
