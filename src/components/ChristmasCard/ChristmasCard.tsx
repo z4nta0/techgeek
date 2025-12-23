@@ -20,7 +20,11 @@ gsap.registerPlugin( useGSAP, ScrambleTextPlugin, SplitText );      // this is a
 
 function ChristmasCard () {
 
-    const { winHeiNum, winWidNum } = useWindowSize();
+    // #region State Variables
+
+    const { winHeiNum, winWidNum } = useWindowSize(); // { window height number, window width number } = this is a custom defined hook that provides the current window height and width numbers and will trigger re-renders when the window is resized and their corresponding state variables change; they are also used to trigger the useEffect() hook for window resize events in order to recalculate the snowfall and the squares transitional animation parameters
+
+     // #endregion State Variables
 
 
 
@@ -497,6 +501,8 @@ function ChristmasCard () {
      ** few React-specific friction points, because cleanup is important in React
      ** and gsap.context() makes it simple.
      **
+     ** The empty dependency array ensures this effect runs only once when the component mounts.
+     **
      ** @param   = this function takes no parameters
      ** @returns = this function does not return anything
      **
@@ -587,7 +593,7 @@ function ChristmasCard () {
             autoAlpha : 0,   // this will store the fade in value from opacity : 0 and visibility : hidden
             stagger   : 0.05 // this will store the time gap between each character animation in seconds
 
-        }, '<');
+        });
 
         // #endregion 4th GSAP Animation - Hacked Paragraph Split Character Text Animation
 
@@ -707,7 +713,7 @@ function ChristmasCard () {
 
         // #endregion 10th GSAP Animation - Snowfall Text Split Character Text Animation
 
-    }, [] ); // this will define when useGSAP should be run, an empty dependency array ensures this effect runs only once when the component mounts; unlike the snowfall animation inside of useEffect(), this animation does not need to be re-run on window resize
+    }, [] ); // this will define when useGSAP() should be run, an empty dependency array ensures this effect runs only once when the component mounts
 
     // #endregion Function Body
 
@@ -737,8 +743,8 @@ function ChristmasCard () {
      ** which will loop over said array and call each of those functions on a set interval
      ** thus creating the animation effect.
      **
-     ** The empty dependency array ([ winHeiNum, winWidNum ]) ensures this effect runs
-     ** whenever the window is resized and also once when the component mounts.
+     ** The winHeiNum and winWidNum state variables that are added to the dependency array
+     ** ensures this effect will run whenever the window is resized or when the component mounts.
      ** 
      ** @param   = this function takes no parameters
      ** @returns = this function does not return anything
@@ -858,7 +864,7 @@ function ChristmasCard () {
 
         // #endregion Snowflake Animation Section
 
-    }, [ winHeiNum, winWidNum ] ); // this will utilize the state variables used for the window height and width numbers as dependencies so that the useEffect() is called whenever the window is resized
+    }, [ winHeiNum, winWidNum ] ); // this will define when useEffect() should be run, in this case it is when the window height number or window width number state variables from the useWindowSize() custom hook change
 
     // #endregion Function Body
 
