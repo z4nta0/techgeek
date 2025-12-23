@@ -878,14 +878,15 @@ function ChristmasCard () {
 
         // #region Component Section Element
 
-        <  section id='comSecEle' className={ styles.componentSection } >
+        <  section id='comSecEle' className={ styles.componentSection } > { /* component section element = this is the component wrapping section element, since React requires components to return a single root element */ }
 
 
 
             { /* Start Squares Section Element (Pixelated Transition Effect) */ }
 
-            <  section id='squSecEle' className={ styles.squaresSection } >
+            <  section id='squSecEle' className={ styles.squaresSection } > { /* squares section element = this is the section that creates the pixelated transition animation that is defined inside of the useGSAP() function; its grid columns and rows properties are dynamically set based on the window size inside of the useEffect() function that will run when the component mounts and whenever the window is resized */ }
 
+                { /* this is the grid of square div elements that are dynamically sized based on the window dimensions inside of the useEffect() function that will run when the component mounts and whenever the window is resized; each div will be faded in or out in a random order inside of the useGSAP() function to create a transition animation between window load -> show the hacked section -> hide the hacked section -> show the snowfall section */ }
                 < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
                 < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
                 < div className={ `${ styles.squares } pixelatedTransitionSquares `} ></ div >
@@ -1345,11 +1346,11 @@ function ChristmasCard () {
 
             { /* Start Hacked Section Element */ }
 
-            <  section id='hacSecEle'  className={ styles.hackedSection } >
+            <  section id='hacSecEle'  className={ styles.hackedSection } > { /* hacked section element = this is the section with the cartoony pirate skull and crossbones background image that will be shown after the initial pixelated transition animation has finished running and will then be hidden by another pixelated transition animation after which the snowfall section will be overlaid on top of it thereby hiding this section until the page is reloaded */ }
 
-                < h1   id='hacHe1Ele'  className={ styles.hackedHeader1 } ></ h1 >
+                < h1   id='hacHe1Ele'  className={ styles.hackedHeader1 } ></ h1 > { /* hacked header 1 element = this is the text that will first have a scramble text animation, then two more glitch text animations applied to it as defined inside of the useGSAP() function */ }
 
-                < p    id='hacParEle'  className={ ` ${ styles.hackedParagraph } hackedSplitText ` } >Just kidding! But it just goes to show you that you should never trust a QR code! Christmas present incoming...</ p >
+                < p    id='hacParEle'  className={ ` ${ styles.hackedParagraph } hackedSplitText ` } >Just kidding! But it just goes to show you that you should never trust a QR code! Christmas present incoming...</ p > { /* hacked paragraph element = this is the text that will first have a split text animation, then a glitch text animation applied to it as defined inside of the useGSAP() function */ }
 
             </ section >
 
@@ -1359,13 +1360,13 @@ function ChristmasCard () {
 
             { /* Start Snowfall Section Element */ }
 
-            <  section id='snoSecEle'  className={ `${ styles.snowfallSection } snowfallSplitText` } >
+            <  section id='snoSecEle'  className={ `${ styles.snowfallSection } snowfallSplitText` } > { /* snowfall section element = this is the section with the cartoony snowy cabin and evergreen trees background image that will be shown after the three pixelated transition and hacked section animations have finished running; it will have a custom defined (i.e. a not a GSAP animation) snowfall animation overlaid on top of it and will persist until the page is reloaded */ }
 
-                < h1   id='snoHe1Ele'  className={ styles.snowfallHeader1 } >Merry Christmas, { namParStr }!</ h1 >
+                < h1   id='snoHe1Ele'  className={ styles.snowfallHeader1 } >Merry Christmas, { namParStr }!</ h1 > { /* snowfall header 1 element = this is the text that will have a split text animation applied to it as defined inside of the useGSAP() function; the name text will be dynamically set on page load by grabbing the URL name parameter */ }
 
-                < img  id='snoImgEle'  className={ styles.snowfallImage } src={ snowman } />
+                < img  id='snoImgEle'  className={ styles.snowfallImage } src={ snowman } /> { /* snowfall image element = this is the cartoony image of the snowman that will be displayed in the lower left corner of this section */ }
 
-                < p    id='snoParEle'  className={ styles.snowfallParagraph } >< span id='snoSpaEle' className={ styles.snowfallSpan } >From,</ span > Mr. Awesome</ p >
+                < p    id='snoParEle'  className={ styles.snowfallParagraph } >< span id='snoSpaEle' className={ styles.snowfallSpan } >From,</ span > Mr. Awesome</ p > { /* snowfall paragraph element = this is the text that will have a split text animation applied to it as defined inside of the useGSAP() function */ }
 
             </ section >
 
