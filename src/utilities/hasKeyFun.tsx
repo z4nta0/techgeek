@@ -31,6 +31,7 @@
 
 const hasKeyFun = <T extends object, K extends PropertyKey> ( obj: T, key: K ) : obj is T & Record < K, unknown > => {
 
+        /** The Javascript Object.prototype.hasOwnProperty.call() method is used to safely and reliably check if an object has an 'own' direct) property, avoiding potential issues with objects that might override the method or have no prototype. */
         return Object.prototype.hasOwnProperty.call( obj, key );
 
 };
