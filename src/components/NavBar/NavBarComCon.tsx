@@ -5,7 +5,7 @@ import { aboutCount   } from './clickCountArrSlice.tsx'; /** This is the reducer
 import { contactCount } from './clickCountArrSlice.tsx'; /** This is the reducer function for managing the click count number staObj value for the Contact page link. */
 import { homeCount    } from './clickCountObjSlice.tsx'; /** This is the reducer function for managing the click count number staObj value for the Home page link. */
 import { logoCount    } from './clickCountObjSlice.tsx'; /** This is the reducer function for managing the click count number staObj value for the Home page logo link. */
-import { NavBarCom    } from './NavBarCom';              /** This is the presentational component that contains the JSX for the navigation bar. */
+import   NavBarCom      from './NavBarCom';              /** This is the presentational component that contains the JSX for the navigation bar. */
 import { type State   } from '../../store.tsx';          /** This is the custom TypeScript type definition for the Redux store's entire staObj object. */
 import { store        } from '../../store.tsx';          /** This is the Redux store object that contains the entire staObj tree of the application. */
 
@@ -26,9 +26,9 @@ import { store        } from '../../store.tsx';          /** This is the Redux s
 
 type NavBarComConPro = {
 
-  namStr: string;
-  staObj: State;
-  disFun: Function;
+  namStr : string;
+  staObj : State;
+  disFun : Function;
 
 };
 
@@ -138,14 +138,14 @@ function NavBarComCon ( props : NavBarComConPro ) : React.ReactElement {
 
 
         /** This will dispatch the Redux Toolkit custom defined logoCount reducer in order to increment the logo click count value in the Redux store. */
-        disFun(logoCount());
+        disFun( logoCount() );
 
 
         /** logCouNum   = Logo Count Number stores the number of times that the navigation bar's logo Home page link has been clicked. These must use the {@link store.getState} method instead of the {@link staObj} prop or it will use an outdated value. */
         const logCouNum = store.getState().clickCountObj.logoCount;
 
         /** This logs the number of times the logo Home page link has been clicked to the console in order to verify that the click count is being tracked correctly. */
-        console.log(`You clicked on the logo link for the ${ namStr } Home page ${ logCouNum } times!`);
+        console.log( `You clicked on the logo link for the ${ namStr } Home page ${ logCouNum } times!` );
 
     };
 
@@ -203,14 +203,14 @@ function NavBarComCon ( props : NavBarComConPro ) : React.ReactElement {
 
 
         /** This will dispatch the Redux Toolkit custom defined homeCount reducer in order to increment the home click count value in the Redux store. */
-        disFun(homeCount());
+        disFun( homeCount() );
 
 
         /** homCouNum   = Home Count Number stores the number of times that the navigation bar's Home page link has been clicked. These must use the {@link store.getState} method instead of the {@link staObj} prop or it will use an outdated value. */
         const homCouNum = store.getState().clickCountObj.homeCount;
 
         /** This logs the number of times the Home page link has been clicked to the console in order to verify that the click count is being tracked correctly. */
-        console.log(`You clicked on the navbar link for the ${ namStr } Home page ${ homCouNum } times!`);
+        console.log( `You clicked on the navbar link for the ${ namStr } Home page ${ homCouNum } times!` );
 
     };
 
@@ -268,14 +268,14 @@ function NavBarComCon ( props : NavBarComConPro ) : React.ReactElement {
 
 
         /** This will dispatch the Redux Toolkit custom defined aboutCount reducer in order to increment the about click count value in the Redux store. */
-        disFun(aboutCount());
+        disFun( aboutCount() );
 
 
         /** aboCouNum   = About Count Number stores the number of times that the navigation bar's About page link has been clicked. These must use the {@link store.getState} method instead of the {@link staObj} prop or it will use an outdated value. */
         const aboCouNum = store.getState().clickCountArr[0];
 
         /** This logs the number of times the About page link has been clicked to the console in order to verify that the click count is being tracked correctly. */
-        console.log(`You clicked on the navbar link for the ${ namStr } About page ${ aboCouNum } times!`);
+        console.log( `You clicked on the navbar link for the ${ namStr } About page ${ aboCouNum } times!` );
 
     };
 
@@ -334,14 +334,14 @@ function NavBarComCon ( props : NavBarComConPro ) : React.ReactElement {
 
 
         /** This will dispatch the Redux Toolkit custom defined contactCount reducer in order to increment the contact click count value in the Redux store. */
-        disFun(contactCount());
+        disFun( contactCount() );
 
 
         /** conCouNum   = Contact Count Number stores the number of times that the navigation bar's Contact page link has been clicked. These must use the {@link store.getState} method instead of the {@link staObj} prop or it will use an outdated value. */
         const conCouNum = store.getState().clickCountArr[1];
 
         /** This logs the number of times the Contact page link has been clicked to the console in order to verify that the click count is being tracked correctly. */
-        console.log(`You clicked on the navbar link for the ${ namStr } Contact page ${ conCouNum } times!`);
+        console.log( `You clicked on the navbar link for the ${ namStr } Contact page ${ conCouNum } times!` );
 
     };
 
@@ -362,7 +362,7 @@ function NavBarComCon ( props : NavBarComConPro ) : React.ReactElement {
 
             { /** Start Navigation Bar Component */ }
 
-            < NavBarCom namStr={ namStr } staObj={ staObj } disFun={ disFun } onLogoClick={ handleClickLogFun } onHomeClick={ handleClickHomFun } onAboutClick={ handleClickAboFun } onContactClick={ handleClickConFun } /> { /** Navigation Bar Component = This is the component that contains all of the HTML content for the navigation bar. */ }
+            < NavBarCom namStr={ namStr } onClickLog={ handleClickLogFun } onClickHom={ handleClickHomFun } onClickAbo={ handleClickAboFun } onClickCon={ handleClickConFun } /> { /** Navigation Bar Component = This is the component that contains all of the HTML content for the navigation bar. */ }
 
             { /** End Navigation Bar Component */ }
 

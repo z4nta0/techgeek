@@ -235,3 +235,12 @@ body {
 }
 
 
+a {
+    color: #CCCCCC;
+}
+
+a.active {
+    color: #FFFFFF;
+    font-weight: bold;
+  /* Add any other active styles */
+}
