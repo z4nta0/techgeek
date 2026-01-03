@@ -12,8 +12,8 @@ export interface State {
 
     clickCountObj : {
 
-        logoCount : number;
-        homeCount : number;
+        logCouNum : number;
+        homCouNum : number;
 
     };
 
